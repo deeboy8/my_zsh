@@ -81,15 +81,7 @@ char* my_strtok(char* path, char seperator) {
 bool is_internal_command(const char* dsh_command, const char* command) {
     assert(command);
     assert(dsh_command);
-    int value = strcmp(dsh_command, command);
-    // BUGBUG: it seems to be in a loop somehow...get multiple print values in is_internal_function
-    if (value == 0) {
-        printf("print true: value is: %d\n", value);
-        return true; 
-    } else {
-        printf("print false: value is: %d\n",value);
-        return false;
-    }
+    return strcmp(dsh_command, command) == 0;
 }
 
 bool run_internal(command_line_t* command_line) {
@@ -100,14 +92,14 @@ bool run_internal(command_line_t* command_line) {
         run_result = dsh_echo(command_line);
     } else if (is_internal_command(dsh_print_working_directory_command, command_line->command)) {
         run_result = dsh_pwd(command_line);
-    } else if (is_internal_command(CD, command_line->command)){
+    } else if (is_internal_command(dsh_change_working_directory_command, command_line->command)) {
         run_result = dsh_cd(command_line);
-    // } else if (is_internal_command(dsh_which_command, command_line->command)){
-    //     run_result = dsh_which(command_line);
-    // } else if (is_internal_command(dsh_display_environment_command, command_line->command)){
-    //     run_result = dsh_env(command_line);
-    // } else if (is_internal_command(dsh_set_environment, command_line->command)) {
-    //     run_result = dsh_setenv(command_line); 
+    } else if (is_internal_command(dsh_which_command, command_line->command)) {
+        run_result = dsh_which(command_line);
+    } else if (is_internal_command(dsh_display_environment_command, command_line->command)) {
+        run_result = dsh_env();
+    } else if (is_internal_command(dsh_set_environment, command_line->command)) {
+        run_result = dsh_setenv(command_line); 
     // } else if (is_internal_command(dsh_unsetenv_environment, command_line->command)) {
     //     run_result = dsh_unsetenv(command_line); 
     } else {
@@ -188,7 +180,7 @@ int main(int argc, char* argv[], char* envp[]) {
         ssize_t nread = getline(&command_line_buffer, &command_line_n, stdin);
         assert(nread != 0);
         assert(command_line_buffer);
-        
+        command_line_buffer[strlen(command_line_buffer) - 1] = '\0';
         command_line.command = my_strtok(command_line_buffer, ' ');
         assert(command_line.command);
       

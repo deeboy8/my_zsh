@@ -78,7 +78,7 @@ char* my_strcat_zsh(char* s1, const char* s2) {
 	return (s1);
 }
 
-/*char* my_strjoin(char const* s1, char const* s2) {
+char* my_strjoin(char const* s1, char const* s2) {
 	if (s1 == NULL) {
 		return NULL;
 	}
@@ -95,4 +95,4 @@ char* my_strcat_zsh(char* s1, const char* s2) {
 		p = my_strcat_zsh(p, s2);
 
 	return (p);
-}*/
+}

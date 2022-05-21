@@ -14,18 +14,7 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "MIMode": "lldb",
-            "osx": {
-                "MIMode": "lldb",
-                "miDebuggerArgs": "${input:lldbArgs}",
-              }
+            "externalConsole": true
         }
-    ],
-    "inputs": [
-        {
-          "id": "lldbArgs",
-          "type":"promptString",
-          "description": "args for lldb",
-          "default": ""
-        },
     ]
 }

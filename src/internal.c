@@ -29,22 +29,28 @@ bool dsh_cd(command_line_t* command_line) {
     return (chdir(path) == 0);
 }
 
-/*bool dsh_which(command_line_t* command_line) {
+// determine which folder program located
+bool dsh_which(command_line_t* command_line) {
     assert(command_line);
     char* external_command = NULL;
     bool external_command_found = false;
     if ((external_command = my_strtok(NULL, ' ')) != NULL) {
         const char* path = dsh_enumerate_env_var("PATH", ":");
+        
         while (path) {
             char path_buffer[PATH_MAX] = {'\0'};
-            char* new_string = ft_strjoin(path_buffer, external_command);
-
+            strcpy(path_buffer, path);
+            char* new_string = my_strjoin(path_buffer, external_command);
+            puts(new_string);
             struct stat sb = {0};
-            if (stat(new_string, &sb) == 0) && S_ISREG(sb.st_mode)) {
-                my_puts(new_string);
+            if ((stat(new_string, &sb) == 0) && S_ISREG(sb.st_mode)) {
+                puts("SUCCESS");
                 external_command_found = true;
+                break;
             }
-            path = dsh_enumerate_env_var()
+            path = dsh_enumerate_env_var(NULL, ":");
         }
     }
-}*/ 
+    return external_command_found;
+}
+

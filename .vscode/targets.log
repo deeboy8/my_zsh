@@ -10,7 +10,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 make: *** No rule to make target `all'.  Stop.
 
 
-# Make data base, printed on Tue May 17 20:28:19 2022
+# Make data base, printed on Sat May 21 12:31:56 2022
 
 # Variables
 
@@ -21,6 +21,7 @@ make: *** No rule to make target `all'.  Stop.
 # environment
 VSCODE_LOG_NATIVE = false
 # automatic
+ 
 ?D = $(patsubst %/,%,$(dir $?))
 # automatic
 @D = $(patsubst %/,%,$(dir $@))
@@ -123,6 +124,7 @@ MAKEFLAGS = Rrqp
 # environment
 MFLAGS = -Rrqp
 # automatic
+ 
 *D = $(patsubst %/,%,$(dir $*))
 # makefile (from `makefile', line 3)
 MAIN = dsh
@@ -171,10 +173,10 @@ _CE_CONDA =
 
 # Directories
 
-# . (device 16777221, inode 18703168): 9 files, no impossibilities.
-# src (device 16777221, inode 18706224): 13 files, no impossibilities.
+# . (device 16777221, inode 18703168): 7 files, no impossibilities.
+# src (device 16777221, inode 18706224): 8 files, no impossibilities.
 
-# 22 files, no impossibilities in 2 directories.
+# 15 files, no impossibilities in 2 directories.
 
 # Implicit Rules
 
@@ -223,10 +225,11 @@ src/internal.c:
 # Not a target:
 makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-17 07:15:18
+#  Last modified 2022-05-21 12:31:39
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
+ 
 # Load=0/32=0%, Rehash=0, Collisions=0/0=0%
 
 # Not a target:
@@ -327,6 +330,6 @@ src/internal.o:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Tue May 17 20:28:19 2022
+# Finished Make data base on Sat May 21 12:31:56 2022
 
  

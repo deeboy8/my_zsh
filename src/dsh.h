@@ -17,12 +17,10 @@ static const char default_prompt[] = "dsh> ";
 #include <dirent.h>
 #include <limits.h>
 
-#define CD "cd"
-
 static char dsh_exit_command[]                      = "exit";
 static char dsh_echo_command[]                      = "echo";
 static char dsh_print_working_directory_command[]   = "pwd";
-// static char dsh_change_working_directory_command[]  = "cd";
+static char dsh_change_working_directory_command[]  = "cd";
 static char dsh_which_command[]                     = "which";
 static char dsh_display_environment_command[]       = "env";
 static char dsh_set_environment[]                   = "setenv";
@@ -66,6 +64,10 @@ bool dsh_cd(command_line_t* command_line);
 bool dsh_echo(command_line_t* command_line);
 bool dsh_pwd(command_line_t* command_line);
 char* dsh_getenv(const char* name);
+bool dsh_which(command_line_t* command_line);
+const char* dsh_enumerate_env_var(const char* name, const char* delimiter);
+bool dsh_env();
+bool dsh_setenv(command_line_t* command_line);
 
 // my_printf 
 int my_printf(char* restrict format, ...);
@@ -83,7 +85,7 @@ char* my_strcat(char* s1, const char* s2);
 char* my_strtok(char* path, char seperator);
 // bool display_prompt(void);
 int get_count(char* env[]);
-char* my_strjoin(char const* s1, char const* s2, bool char_flag);
+char* my_strjoin(char const* s1, char const* s2);
 void* my_realloc(void* mem_ptr, int count);
 // char* my_strdup(const char* s1);
 char* my_strcpy(char* dest, const char* src);
