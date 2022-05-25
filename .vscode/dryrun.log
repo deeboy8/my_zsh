@@ -1,11 +1,10 @@
-make --dry-run --keep-going --print-directory
+make --dry-run --always-make --keep-going --print-directory
 make: Entering directory `/Users/demitrusbooker/projects/dsh'
-gcc -Wall -Werror -Wextra -g    -c -o src/env.o src/env.c
- 
-gcc -Wall -Werror -Wextra -g    -c -o src/internal.o src/internal.c
-gcc -Wall -Werror -Wextra -g    -c -o src/main.o src/main.c
-gcc -Wall -Werror -Wextra -g    -c -o src/my_printf.o src/my_printf.c
-gcc -Wall -Werror -Wextra -g    -c -o src/utility.o src/utility.c
-gcc -Wall -Werror -Wextra -g  -o dsh  src/env.o src/internal.o src/main.o src/my_printf.o src/utility.o
+gcc -Wall -Werror -Wextra -g -g3 -fsanitize=address   -c -o src/env.o src/env.c
+gcc -Wall -Werror -Wextra -g -g3 -fsanitize=address   -c -o src/internal.o src/internal.c
+gcc -Wall -Werror -Wextra -g -g3 -fsanitize=address   -c -o src/main.o src/main.c
+gcc -Wall -Werror -Wextra -g -g3 -fsanitize=address   -c -o src/my_printf.o src/my_printf.c
+gcc -Wall -Werror -Wextra -g -g3 -fsanitize=address   -c -o src/utility.o src/utility.c
+gcc -Wall -Werror -Wextra -g -g3 -fsanitize=address -o dsh  src/env.o src/internal.o src/main.o src/my_printf.o src/utility.o
 make: Leaving directory `/Users/demitrusbooker/projects/dsh'
  

@@ -100,8 +100,8 @@ bool run_internal(command_line_t* command_line) {
         run_result = dsh_env();
     } else if (is_internal_command(dsh_set_environment, command_line->command)) {
         run_result = dsh_setenv(command_line); 
-    // } else if (is_internal_command(dsh_unsetenv_environment, command_line->command)) {
-    //     run_result = dsh_unsetenv(command_line); 
+    } else if (is_internal_command(dsh_unsetenv_environment, command_line->command)) {
+        run_result = dsh_unsetenv(command_line); 
     } else {
         assert(false);
     }

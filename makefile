@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS  += -Wall -Werror -Wextra -g #-g3 -fsanitize=address
+CFLAGS  += -Wall -Werror -Wextra -g -g3 -fsanitize=address
 MAIN = dsh
 SRCS = $(wildcard src/*.c)
 OBJS = $(SRCS:.c=.o)

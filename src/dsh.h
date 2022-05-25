@@ -37,19 +37,7 @@ typedef struct {
     char* args[];
 } command_line_t;
 
-// maintain newly created envp/ copy of envp
-typedef struct {
-    char* name;
-    char* value;
-} dsh_env_var_t;
 
-// maintain 
-typedef struct {
-    size_t count;
-    dsh_env_var_t variables[];
-}   dsh_environment_t;
-
-static dsh_environment_t* dsh_environment = NULL;
 
 // pwd
 void pwd(void);
@@ -68,6 +56,7 @@ bool dsh_which(command_line_t* command_line);
 const char* dsh_enumerate_env_var(const char* name, const char* delimiter);
 bool dsh_env();
 bool dsh_setenv(command_line_t* command_line);
+bool dsh_unsetenv(command_line_t* command_line);
 
 // my_printf 
 int my_printf(char* restrict format, ...);
