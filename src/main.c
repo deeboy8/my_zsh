@@ -109,13 +109,13 @@ bool run_internal(command_line_t* command_line) {
 }
 
 // run an external command()
-/*bool run_external(command_line_t* command_line) {
-    ASSERT_COMMAND_LINE(command_line);
+bool run_external(command_line_t* command_line) {
+    // ASSERT_COMMAND_LINE(command_line);
     char* argv[ARG_MAX] = {NULL};
     int i = 0;
     // init argv
     argv[i++] = command_line->command;
-    while((argv[i++] = strtok_r(NULL, " \t\r\n\f", &command_line->save_ptr)) != NULL) {
+    while((argv[i++] = my_strtok(NULL, ' ')) != NULL) {
     }
     // get an envp[]
     bool run_result = false;
@@ -126,18 +126,21 @@ bool run_internal(command_line_t* command_line) {
     if(pid > 0) {
         // parent - wait and clean-up
         int status = 0xDEADBEEF;
-		do { // wait for child to terminate before moving on
+		do { 
+            // wait for child to terminate before moving on
 			pid_t wpid = waitpid(pid, &status, WUNTRACED);
+            assert(wpid);
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
         bool success = dsh_free_envp(dsh_envp);
         assert(success);
         run_result = true;
-    } else if(pid == 0) {
+    } else if (pid == 0) {
         // child - run external command
         const char* path = dsh_enumerate_env_var("PATH", ":");
         while(path) {
             char path_buffer[PATH_MAX] = {'\0'};
-            sprintf(path_buffer, "%s/%s", path, command_line->command);
+            // sprintf(path_buffer, "%s/%s", path, command_line->command);
+            my_strjoin(path, command_line->command, true);
             execve(path_buffer, argv, dsh_envp);
             path = dsh_enumerate_env_var(NULL, ":");
         }
@@ -145,7 +148,7 @@ bool run_internal(command_line_t* command_line) {
         perror("fork()");
     }
     return run_result;
-}*/
+}
 
 void display_prompt(const char* prompt) {
     printf("%s", prompt ? prompt : default_prompt);
@@ -193,14 +196,14 @@ int main(int argc, char* argv[], char* envp[]) {
         if (my_strcmp(dsh_exit_command, command_line.command) == 0) {
             break;
         }
-        if (!run_internal(&command_line)) { //} && !run_external(&command_line)) {
+        if (!run_internal(&command_line) && !run_external(&command_line)) {
             my_printf("%s: invalid command\n", command_line.command);
         }
         command_line.command = NULL;
     }
     assert(command_line_buffer);
     free(command_line_buffer);
-    // success = dsh_free_environment();
+    success = g_dsh_free_environment();
     assert(success);
         
     return 0;

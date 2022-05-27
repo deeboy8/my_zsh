@@ -57,6 +57,9 @@ const char* dsh_enumerate_env_var(const char* name, const char* delimiter);
 bool dsh_env();
 bool dsh_setenv(command_line_t* command_line);
 bool dsh_unsetenv(command_line_t* command_line);
+bool g_dsh_free_environment();
+char** dsh_allocate_envp();
+bool dsh_free_envp(char* dsh_envp[]);
 
 // my_printf 
 int my_printf(char* restrict format, ...);
@@ -74,7 +77,7 @@ char* my_strcat(char* s1, const char* s2);
 char* my_strtok(char* path, char seperator);
 // bool display_prompt(void);
 int get_count(char* env[]);
-char* my_strjoin(char const* s1, char const* s2);
+char* my_strjoin(char const* s1, char const* s2, bool flag);
 void* my_realloc(void* mem_ptr, int count);
 // char* my_strdup(const char* s1);
 char* my_strcpy(char* dest, const char* src);

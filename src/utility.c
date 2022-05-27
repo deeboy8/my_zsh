@@ -59,15 +59,20 @@ char* my_strcpy(char* dest, const char* src) {
 	return (dest);
 }*/
 
-char* my_strcat_zsh(char* s1, const char* s2) {
+char* my_strcat_zsh(char* s1, const char* s2, bool flag) {
 	int i = 0, j = 0;
 
 	// loop to end of first string
 	while (s1[i] != '\0') {
 		++i;
 	}
-	s1[i++] = '/';
 
+    if (flag == true) {
+        s1[i++] = '/';
+    } else {
+        s1[i++] = '=';
+    }
+	
 	// add s2 to end of string 1
 	while (s2[j] != '\0') {
 		s1[i] = s2[j];
@@ -78,7 +83,7 @@ char* my_strcat_zsh(char* s1, const char* s2) {
 	return (s1);
 }
 
-char* my_strjoin(char const* s1, char const* s2) {
+char* my_strjoin(char const* s1, char const* s2, bool flag) {
 	if (s1 == NULL) {
 		return NULL;
 	}
@@ -92,7 +97,7 @@ char* my_strjoin(char const* s1, char const* s2) {
 	// else
 		// p = my_strcpy(p, s2);
 	if (s1 && s2)
-		p = my_strcat_zsh(p, s2);
+		p = my_strcat_zsh(p, s2, flag);
 
 	return (p);
 }

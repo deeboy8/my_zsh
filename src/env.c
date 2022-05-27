@@ -181,3 +181,47 @@ bool dsh_unsetenv(command_line_t* command_line) {
 
     return found;
 }
+
+bool g_dsh_free_environment() {
+    assert(g_dsh_environment);
+
+    for (size_t index = 0; index < g_dsh_environment->count; index++) {
+        if (g_dsh_environment->variables[index].name) {
+            free(g_dsh_environment->variables[index].name);
+        }
+        if (g_dsh_environment->variables[index].value) {
+            free(g_dsh_environment->variables[index].value);
+        }
+    }
+    free(g_dsh_environment);
+    g_dsh_environment = NULL;
+    return true;
+}
+
+// free a 'char* envp[]' (for execve())
+bool dsh_free_envp(char* dsh_envp[]) {
+    assert(dsh_envp);
+    char** p = dsh_envp;
+    while(*p) {
+        free(*p++);
+    }
+    free(dsh_envp);
+    return true;
+}
+
+// allocate a 'char*' envp[] for execve()
+char** dsh_allocate_envp() {
+    assert(g_dsh_environment);
+    char** envp = malloc(sizeof(char*) * g_dsh_environment->count + 1);
+    assert(envp);
+
+    for (size_t i = 0; i < g_dsh_environment->count; i++) {
+        char env_var_buffer[PATH_MAX];
+        char* variable = my_strjoin(g_dsh_environment->variables[i].name, g_dsh_environment->variables[i].value, false);
+        strcpy(env_var_buffer, variable);
+        envp[i] = strdup(env_var_buffer);
+        assert(envp[i]);
+    }
+
+    return envp;
+}

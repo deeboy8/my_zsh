@@ -34,22 +34,22 @@ bool dsh_which(command_line_t* command_line) {
     assert(command_line);
     char* external_command = NULL;
     bool external_command_found = false;
+    char* new_string = NULL;
     if ((external_command = my_strtok(NULL, ' ')) != NULL) {
         const char* path = dsh_enumerate_env_var("PATH", ":");
         
         while (path) {
             char path_buffer[PATH_MAX] = {'\0'};
             strcpy(path_buffer, path);
-            char* new_string = my_strjoin(path_buffer, external_command);
-            puts(new_string);
+            new_string = my_strjoin(path_buffer, external_command, true);
             struct stat sb = {0};
             if ((stat(new_string, &sb) == 0) && S_ISREG(sb.st_mode)) {
-                puts("SUCCESS");
                 external_command_found = true;
                 break;
             }
             path = dsh_enumerate_env_var(NULL, ":");
         }
+        my_printf("%s\n", new_string);
     }
     return external_command_found;
 }
