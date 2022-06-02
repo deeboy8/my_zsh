@@ -103,7 +103,7 @@ bool run_internal(command_line_t* command_line) {
     } else if (is_internal_command(dsh_unsetenv_environment, command_line->command)) {
         run_result = dsh_unsetenv(command_line); 
     } else {
-        assert(false);
+        // assert(false);
     }
     return run_result;
 }
@@ -111,7 +111,7 @@ bool run_internal(command_line_t* command_line) {
 // run an external command()
 bool run_external(command_line_t* command_line) {
     // ASSERT_COMMAND_LINE(command_line);
-    char* argv[ARG_MAX] = {NULL};
+    char* argv[PATH_MAX] = {NULL};
     int i = 0;
     // init argv
     argv[i++] = command_line->command;
@@ -122,14 +122,15 @@ bool run_external(command_line_t* command_line) {
     char** dsh_envp = dsh_allocate_envp();
     assert(dsh_envp);
     
-    pid_t pid = fork();
-    if(pid > 0) {
+    // allows for two processes (shell itself and, ie., ls) to run at teh same time
+    pid_t pid = fork(); // two processes running
+    if (pid > 0) {
         // parent - wait and clean-up
-        int status = 0xDEADBEEF;
+        int status = 0xDEADBEEF; // signature/pattern to recognize in debugger; chose an esoteric value
 		do { 
             // wait for child to terminate before moving on
-			pid_t wpid = waitpid(pid, &status, WUNTRACED);
-            assert(wpid);
+			pid_t wpid = waitpid(pid, &status, WUNTRACED); // status should be overwritten by wpid()
+            assert((unsigned int)wpid != 0xDEADBEEF);
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
         bool success = dsh_free_envp(dsh_envp);
         assert(success);
@@ -137,13 +138,17 @@ bool run_external(command_line_t* command_line) {
     } else if (pid == 0) {
         // child - run external command
         const char* path = dsh_enumerate_env_var("PATH", ":");
-        while(path) {
+        while (path) {
             char path_buffer[PATH_MAX] = {'\0'};
             // sprintf(path_buffer, "%s/%s", path, command_line->command);
-            my_strjoin(path, command_line->command, true);
-            execve(path_buffer, argv, dsh_envp);
+            strcpy(path_buffer, path);
+            char* new_string = my_strjoin(path, command_line->command, true);
+            // replaces content of copied parent informatio with child information, like ls
+            // shell would be replaced with exec call,  because don't want shell replaced and still running, you fork and call exec for child process
+            execve(new_string, argv, dsh_envp);
             path = dsh_enumerate_env_var(NULL, ":");
         }
+        // ADD ERROR MESSAGE
     } else {
         perror("fork()");
     }
@@ -152,18 +157,6 @@ bool run_external(command_line_t* command_line) {
 
 void display_prompt(const char* prompt) {
     printf("%s", prompt ? prompt : default_prompt);
-}
-
-bool set_args(command_line_t* command, char** string_split) {
-    int string_array_index = 1;
-    int arg_index = 0;
-
-    while (arg_index < command->wordcount) {
-        command->args[arg_index] = string_split[string_array_index];
-        arg_index++, string_array_index++;
-    }
-
-    return true;
 }
 
 int main(int argc, char* argv[], char* envp[]) {

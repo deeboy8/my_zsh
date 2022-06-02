@@ -203,7 +203,8 @@ bool dsh_free_envp(char* dsh_envp[]) {
     assert(dsh_envp);
     char** p = dsh_envp;
     while(*p) {
-        free(*p++);
+        free(*p);
+        p++;
     }
     free(dsh_envp);
     return true;
@@ -212,14 +213,16 @@ bool dsh_free_envp(char* dsh_envp[]) {
 // allocate a 'char*' envp[] for execve()
 char** dsh_allocate_envp() {
     assert(g_dsh_environment);
-    char** envp = malloc(sizeof(char*) * g_dsh_environment->count + 1);
+    size_t size = sizeof(char*) * g_dsh_environment->count + 1;
+    char** envp = malloc(size);
     assert(envp);
+    memset(envp, 0, size);
 
-    for (size_t i = 0; i < g_dsh_environment->count; i++) {
-        char env_var_buffer[PATH_MAX];
-        char* variable = my_strjoin(g_dsh_environment->variables[i].name, g_dsh_environment->variables[i].value, false);
-        strcpy(env_var_buffer, variable);
-        envp[i] = strdup(env_var_buffer);
+    for (size_t i = 0; i < g_dsh_environment->count - 1; i++) {
+        // char env_var_buffer[PATH_MAX]; // local env buffer
+        envp[i] = my_strjoin(g_dsh_environment->variables[i].name, g_dsh_environment->variables[i].value, false);
+        // strcpy(env_var_buffer, variable);
+        // envp[i] = //strdup(env_var_buffer);
         assert(envp[i]);
     }
 
