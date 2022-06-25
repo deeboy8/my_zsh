@@ -103,7 +103,7 @@ bool run_internal(command_line_t* command_line) {
     } else if (is_internal_command(dsh_unsetenv_environment, command_line->command)) {
         run_result = dsh_unsetenv(command_line); 
     } else {
-        // assert(false);
+        return run_result;
     }
     return run_result;
 }
@@ -132,8 +132,8 @@ bool run_external(command_line_t* command_line) {
 			pid_t wpid = waitpid(pid, &status, WUNTRACED); // status should be overwritten by wpid()
             assert((unsigned int)wpid != 0xDEADBEEF);
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-        bool success = dsh_free_envp(dsh_envp);
-        assert(success);
+        // bool success = dsh_free_envp(dsh_envp);
+        // assert(success);
         run_result = true;
     } else if (pid == 0) {
         // child - run external command
@@ -152,6 +152,8 @@ bool run_external(command_line_t* command_line) {
     } else {
         perror("fork()");
     }
+    bool success = dsh_free_envp(dsh_envp);
+    assert(success);
     return run_result;
 }
 

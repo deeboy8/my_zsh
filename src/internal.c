@@ -5,7 +5,22 @@
 bool dsh_echo(command_line_t* command_line) {
     assert(command_line);
     char* argument = my_strtok(NULL, '\n');
-    return puts(argument);  
+    
+    if (argument[0] == '$') {
+        size_t len = my_strlen(argument);
+        char buffer[PATH_MAX] = {'\0'};
+        argument++;
+        strncpy(buffer, argument, (len - 1));
+        if (check_for_env_var(buffer)) {
+            printf("inside buffer is: %s\n", buffer);
+            char* value = dsh_getenv(buffer);
+            return my_printf("%s\n", value);
+        } else {
+            return my_printf("variable not found\n");
+        }
+    } else {
+        return my_printf("%s\n", argument);  
+    }
 }
 
 // print the working directory to stdout

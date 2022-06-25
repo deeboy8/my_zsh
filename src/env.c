@@ -79,6 +79,18 @@ bool dsh_allocate_environment(char* env[]) {
     return true;
 }
 
+bool check_for_env_var(char* name) {
+    bool is_present = false;
+
+    for (size_t i = 0; i < g_dsh_environment->count; i++) {
+        if (STRING_EQUAL(name, g_dsh_environment->variables[i].name)) {
+            is_present = true;
+            break;
+        }
+    }
+    return is_present;
+}
+
 char* dsh_getenv(const char* name) {
     assert(g_dsh_environment);
     assert(name);
@@ -93,12 +105,10 @@ char* dsh_getenv(const char* name) {
 }
 
 // implement the 'env' command
-bool dsh_env() { //command_line_t* command_line) {
+bool dsh_env() { 
     assert(g_dsh_environment);
     for(size_t i = 0; i < g_dsh_environment->count; i++) {
-        // if(!is_null_present(&dsh_environment->variables[i])) {
-            my_printf("index: %d, %s=%s\n", i, g_dsh_environment->variables[i].name, g_dsh_environment->variables[i].value);
-        //}
+        my_printf("index: %d, %s=%s\n", i, g_dsh_environment->variables[i].name, g_dsh_environment->variables[i].value);
     }
     return true;
 }
@@ -161,15 +171,13 @@ bool dsh_unsetenv(command_line_t* command_line) {
 
     bool found = false;
     char* dsh_var_name = my_strtok(NULL, ' ');
-    printf("dsh_var_name: %s\n", dsh_var_name);
+    // search for var name --> free key:value pair upon discovery
     for (size_t index = 0; index < g_dsh_environment->count; index++) {
         if (my_strcmp(dsh_var_name, g_dsh_environment->variables[index].name) == 0) {
             free(g_dsh_environment->variables[index].name);
             g_dsh_environment->variables[index].name = NULL;
-            // assert(g_dsh_environment->variables[index].name = NULL);
             free(g_dsh_environment->variables[index].value);
             g_dsh_environment->variables[index].value = NULL;
-            // assert(g_dsh_environment->variables[index].value = NULL);
             found = true;
             break;
         }
