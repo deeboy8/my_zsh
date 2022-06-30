@@ -37,7 +37,10 @@ typedef struct {
     char* args[];
 } command_line_t;
 
-
+typedef struct nodelist {
+    char* string;
+    struct nodelist* next;
+} nodelist;
 
 // pwd
 void pwd(void);
@@ -46,7 +49,7 @@ void pwd(void);
 // cd
 bool is_directory(const char* string);
 void cd(const char* string);
-bool dsh_cd(command_line_t* command_line);
+bool dsh_cd(command_line_t* command_line, nodelist* head);
 
 // echo
 bool dsh_echo(command_line_t* command_line);
