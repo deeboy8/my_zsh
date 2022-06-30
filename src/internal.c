@@ -49,7 +49,8 @@ bool delete_linked_list(nodelist* head) {
 
     return true;
 }
-// create a single node in memory
+
+// create a single instance of a node in memory
 nodelist* create_new_node() {
     // get current working directory
     char cwd[PATH_MAX] = {'\0'};
@@ -68,6 +69,7 @@ nodelist* create_new_node() {
     return new_node;
 }
 
+// link nodes together as they are made
 bool link_nodes(nodelist* head, nodelist* new_node) {
     nodelist* temp;
 
@@ -87,9 +89,13 @@ bool link_nodes(nodelist* head, nodelist* new_node) {
     return true;
 }
 
+// print previous directory when '-' passed to cd command
 bool print_previous_directory(nodelist* head) {
+    // ptr to walk across linked list to the end
     nodelist* leading = head;
     assert(leading == head);
+    // ptr to stop at second to last node before end
+    // this will allow for printing the previous directory at trailing->string
     nodelist* trailing = head;
     assert(trailing == head);
    
@@ -107,6 +113,7 @@ bool print_previous_directory(nodelist* head) {
     return true;    
 }
 
+// test function to see if properly making nodes
 bool print_linked_list(nodelist* head) {
     nodelist* temp = head;
     assert(temp == head);
