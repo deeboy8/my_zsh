@@ -60,7 +60,7 @@ nodelist* create_new_node() {
     size_t len = my_strlen(pwd);
     assert(len > 0);
     // allocate
-    nodelist* new_node = malloc(sizeof(nodelist) * len + 1);
+    nodelist* new_node = malloc(sizeof(nodelist));
     assert(new_node);
 
     new_node->string = strdup(pwd); // need to add terminating char
@@ -118,7 +118,7 @@ bool print_linked_list(nodelist* head) {
     nodelist* temp = head;
     assert(temp == head);
 
-    if (temp == NULL) {
+    if (head == NULL) {
         printf("%s\n", temp->string);
     } else {
         while (temp != NULL) {
@@ -149,12 +149,12 @@ bool dsh_cd(command_line_t* command_line, nodelist* head) {
     // link nodes
     bool link = link_nodes(head, node);
     assert(link);
-    print_linked_list(head);
-   /* if (!path) {
+    // print_linked_list(head);
+   if (!path) {
         path = dsh_getenv("HOME");
     } else if (my_strcmp(path, "-") == 0) {
         print_previous_directory(head);
-    }*/
+    }
 
     return (chdir(path) == 0);
 }
