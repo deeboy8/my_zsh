@@ -110,7 +110,7 @@ char *dsh_getenv(const char *name) {
 bool dsh_env() {
   assert(g_dsh_environment);
   for (size_t i = 0; i < g_dsh_environment->count; i++) {
-    my_printf("index: %d, %s=%s\n", i, g_dsh_environment->variables[i].name,
+    my_printf("%s=%s\n", g_dsh_environment->variables[i].name,
               g_dsh_environment->variables[i].value);
   }
   return true;
@@ -246,12 +246,12 @@ char **dsh_allocate_envp() {
   return envp;
 }
 
-bool update_oldpwd_value(char* value) {
+bool update_variable_value(char* name, char* value) {
   assert(value);
   bool updated = false;
   // find variable and replace value
   for (size_t i = 0; i < g_dsh_environment->count; i++) {
-    if (STRING_EQUAL("OLDPWD", g_dsh_environment->variables[i].name)) {
+    if (STRING_EQUAL(name, g_dsh_environment->variables[i].name)) {
       free(g_dsh_environment->variables[i].value);
       g_dsh_environment->variables[i].value = strdup(value);
       updated = true;
@@ -267,7 +267,7 @@ char* get_oldpwd_value() {
     // find variable and replace value
     for (size_t i = 0; i < g_dsh_environment->count; i++) {
         if (STRING_EQUAL("OLDPWD", g_dsh_environment->variables[i].name)) {
-            value = g_dsh_environment->variables[i].value;
+            value = strdup(g_dsh_environment->variables[i].value);
             break;
         }   
     }

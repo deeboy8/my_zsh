@@ -84,7 +84,7 @@ bool is_internal_command(const char* dsh_command, const char* command) {
     return strcmp(dsh_command, command) == 0;
 }
 
-bool run_internal(command_line_t* command_line, nodelist* head) {
+bool run_internal(command_line_t* command_line) {
     assert(command_line);
     bool run_result = false;
     
@@ -93,7 +93,7 @@ bool run_internal(command_line_t* command_line, nodelist* head) {
     } else if (is_internal_command(dsh_print_working_directory_command, command_line->command)) {
         run_result = dsh_pwd(command_line);
     } else if (is_internal_command(dsh_change_working_directory_command, command_line->command)) {
-        run_result = dsh_cd(command_line, head);
+        run_result = dsh_cd(command_line);
     } else if (is_internal_command(dsh_which_command, command_line->command)) {
         run_result = dsh_which(command_line);
     } else if (is_internal_command(dsh_display_environment_command, command_line->command)) {
@@ -164,7 +164,7 @@ void display_prompt(const char* prompt) {
 int main(int argc, char* argv[], char* envp[]) {
     assert(argc);
     assert(argv);
-    nodelist* head = NULL;
+    // nodelist* head = NULL;
     command_line_t command_line = {0};
     size_t command_line_n = 0;
     char* command_line_buffer = NULL;
@@ -192,7 +192,7 @@ int main(int argc, char* argv[], char* envp[]) {
         if (my_strcmp(dsh_exit_command, command_line.command) == 0) {
             break;
         }
-        if (!run_internal(&command_line, head) && !run_external(&command_line)) {
+        if (!run_internal(&command_line) && !run_external(&command_line)) {
             my_printf("%s: invalid command\n", command_line.command);
         }
         command_line.command = NULL;

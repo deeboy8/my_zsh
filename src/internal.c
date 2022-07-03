@@ -5,12 +5,12 @@ bool dsh_echo(command_line_t *command_line) {
   assert(command_line);
   char *argument = my_strtok(NULL, '\n');
 
-  if (argument[0] == '$') {
+  if (argument[0] == '$' ) {
     size_t len = my_strlen(argument);
     char buffer[PATH_MAX] = {'\0'};
     argument++;
     strncpy(buffer, argument, (len - 1));
-    if (check_for_env_var(buffer)) {
+    if (check_for_env_var(buffer) && (!argument)) {
       // printf("inside buffer is: %s\n", buffer);
       char *value = dsh_getenv(buffer);
       return my_printf("%s\n", value);
@@ -158,59 +158,31 @@ bool print_linked_list(nodelist *head) {
 
 
 // command to change directories
-bool dsh_cd(command_line_t *command_line, nodelist *head) {
+bool dsh_cd(command_line_t *command_line) { 
     assert(command_line);
-    assert(head);
     // collect argument from CLI
-    const char *path = my_strtok(NULL, ' ');
+    char *path = my_strtok(NULL, ' ');
 
+    // grab oldpwd value
+    char* temp = get_oldpwd_value();
     // grab current pwd
     char cwd[PATH_MAX] = {'\0'};
     char *pwd = getcwd(cwd, PATH_MAX);
+    assert(pwd);
 
-    // update oldpwd 
-    // bool update = update_oldpwd_value(pwd);
-    // assert(update);
+    // set oldpwd to pwd
+    bool upgrade = update_variable_value("OLDPWD", pwd);
+    assert(upgrade);
 
-    if (!path) {
-        path = dsh_getenv("HOME");       
-    } else if (my_strcmp(path, "-") == 0) {
-        // grab oldpwd value
-        char* temp = get_oldpwd_value();
-        // update oldpwd 
-        bool update = update_oldpwd_value(pwd);
-        assert(update);
-        path = temp;
-    }
-    /*assert(path);
-
-    // do/while
-    //  create a new "free-standing" node in mem
-    nodelist *node = create_new_node();
-    // link nodes
-    bool link = link_nodes(&head, node);
-    assert(link);
-    // TGN: djg - HINT
-    assert(head);
-    // print_linked_list(head);
-    if (!path) {
-    path = dsh_getenv("HOME");
-    } else if (my_strcmp(path, "-") == 0) {
-    print_previous_directory(head);
-    }*/
-
-    return (chdir(path) == 0);
-}
-
-/*bool dsh_cd(command_line_t* command_line) {
-    assert(command_line);
-    const char* path = my_strtok(NULL, ' ');
     if (!path) {
         path = dsh_getenv("HOME");
+    } else if (my_strcmp(path, "-") == 0) {
+        path = temp;
+        upgrade = update_variable_value("PWD", path);
     }
-    assert(path);
+    
     return (chdir(path) == 0);
-}*/
+}
 
 // determine which folder program located
 bool dsh_which(command_line_t *command_line) {
