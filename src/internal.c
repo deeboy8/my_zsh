@@ -1,6 +1,5 @@
 #include "dsh.h"
 
-#
 // echo remainder of stdin stream to stdout
 bool dsh_echo(command_line_t *command_line) {
   assert(command_line);
@@ -71,14 +70,15 @@ nodelist *create_new_node() {
 }
 
 // link nodes together as they are made
-bool link_nodes(nodelist *head, nodelist *new_node) {
+// using nodelist** to CHANGE/MODIFY the value held at nodelist* head
+bool link_nodes(nodelist** head, nodelist *new_node) {
   nodelist *temp;
-
+    // keep a tail pointer so don't have to walk the list every time which can remove while loop on below 
   if (head == NULL) {
-    new_node->next = head;
-    head = new_node;
+    new_node->next = *head;
+    *head = new_node;
   } else {
-    temp = head;
+    temp = *head;
     while (temp->next != NULL) {
       temp = temp->next;
     }
@@ -155,37 +155,51 @@ bool print_linked_list(nodelist *head) {
 // Notice how it doesn't maintain all previous dirs, but rather just the last.
 // That is, 'cd -' toggles between the current and previous (OLDPWD) dir...I
 // think😎.
-//
+
+
 // command to change directories
 bool dsh_cd(command_line_t *command_line, nodelist *head) {
-  assert(command_line);
-  // collect argument(s) from CLI
-  const char *path = my_strtok(NULL, ' ');
-  /*printf("|%s|\n", path);
-  if (!path) {
-      path = dsh_getenv("HOME");
-  } else if (my_strcmp(path, "-") == 0) {
-      char cwd[PATH_MAX] = {'\0'};
-      char* pwd = getcwd(cwd, PATH_MAX);
-  }
-  assert(path);*/
+    assert(command_line);
+    assert(head);
+    // collect argument from CLI
+    const char *path = my_strtok(NULL, ' ');
 
-  // do/while
-  //  create a new "free-standing" node in mem
-  nodelist *node = create_new_node();
-  // link nodes
-  bool link = link_nodes(head, node);
-  assert(link);
-  // TGN: djg - HINT
-  assert(head);
-  // print_linked_list(head);
-  if (!path) {
+    // grab current pwd
+    char cwd[PATH_MAX] = {'\0'};
+    char *pwd = getcwd(cwd, PATH_MAX);
+
+    // update oldpwd 
+    // bool update = update_oldpwd_value(pwd);
+    // assert(update);
+
+    if (!path) {
+        path = dsh_getenv("HOME");       
+    } else if (my_strcmp(path, "-") == 0) {
+        // grab oldpwd value
+        char* temp = get_oldpwd_value();
+        // update oldpwd 
+        bool update = update_oldpwd_value(pwd);
+        assert(update);
+        path = temp;
+    }
+    /*assert(path);
+
+    // do/while
+    //  create a new "free-standing" node in mem
+    nodelist *node = create_new_node();
+    // link nodes
+    bool link = link_nodes(&head, node);
+    assert(link);
+    // TGN: djg - HINT
+    assert(head);
+    // print_linked_list(head);
+    if (!path) {
     path = dsh_getenv("HOME");
-  } else if (my_strcmp(path, "-") == 0) {
+    } else if (my_strcmp(path, "-") == 0) {
     print_previous_directory(head);
-  }
+    }*/
 
-  return (chdir(path) == 0);
+    return (chdir(path) == 0);
 }
 
 /*bool dsh_cd(command_line_t* command_line) {

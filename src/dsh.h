@@ -90,6 +90,8 @@ bool dsh_allocate_environment(char *env[]);
 char *my_strdup(const char *s1);
 int wordlen(char const *s, char c);
 bool check_for_env_var(char *name);
+bool update_oldpwd_value(char* value);
+char* get_oldpwd_value();
 
 // add a struct that only holds count of env var_string
 // this can be updated and passed around as necessary to hold accurate count if

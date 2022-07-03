@@ -245,3 +245,32 @@ char **dsh_allocate_envp() {
 
   return envp;
 }
+
+bool update_oldpwd_value(char* value) {
+  assert(value);
+  bool updated = false;
+  // find variable and replace value
+  for (size_t i = 0; i < g_dsh_environment->count; i++) {
+    if (STRING_EQUAL("OLDPWD", g_dsh_environment->variables[i].name)) {
+      free(g_dsh_environment->variables[i].value);
+      g_dsh_environment->variables[i].value = strdup(value);
+      updated = true;
+      break;
+    }
+  }
+
+  return updated;
+}
+
+char* get_oldpwd_value() {
+    char* value = NULL;
+    // find variable and replace value
+    for (size_t i = 0; i < g_dsh_environment->count; i++) {
+        if (STRING_EQUAL("OLDPWD", g_dsh_environment->variables[i].name)) {
+            value = g_dsh_environment->variables[i].value;
+            break;
+        }   
+    }
+
+    return value;
+}
