@@ -82,15 +82,28 @@ bool dsh_allocate_environment(char *env[]) {
 }
 
 bool check_for_env_var(char *name) {
-  bool is_present = false;
-
-  for (size_t i = 0; i < g_dsh_environment->count; i++) {
-    if (STRING_EQUAL(name, g_dsh_environment->variables[i].name)) {
-      is_present = true;
-      break;
+    bool is_present = false;
+    
+    for (size_t i = 0; i < g_dsh_environment->count; i++) {
+        if (STRING_EQUAL(name, g_dsh_environment->variables[i].name)) {
+            is_present = true;
+            break;
+        }
     }
-  }
-  return is_present;
+    return is_present;
+}
+
+bool check_for_env(char* name) {
+    bool is_present = false;
+
+    for (size_t i = 0; i < g_dsh_environment->count - 1; i++) {
+        if (STRING_EQUAL(name, g_dsh_environment->variables[i].name)) {
+            is_present = true;
+            break;
+        }
+    }
+    // printf("%d\n", is_present);
+    return is_present;
 }
 
 char *dsh_getenv(const char *name) {

@@ -92,6 +92,7 @@ int wordlen(char const *s, char c);
 bool check_for_env_var(char *name);
 bool update_variable_value(char* name, char* value);
 char* get_oldpwd_value();
+bool check_for_env(char* name);
 
 // add a struct that only holds count of env var_string
 // this can be updated and passed around as necessary to hold accurate count if
