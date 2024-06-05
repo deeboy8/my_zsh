@@ -1,10 +1,10 @@
 CC = gcc
 CFLAGS  += -Wall -Werror -Wextra -g -g3 -fsanitize=address
-MAIN = dsh
+MAIN = zsh
 SRCS = $(wildcard src/*.c)
 OBJS = $(SRCS:.c=.o)
 
-ALL: $(MAIN)
+all: $(MAIN)
 
 $(MAIN): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(LINKERFLAG) $^

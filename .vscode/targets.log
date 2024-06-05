@@ -7,7 +7,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 
 # This program built for i386-apple-darwin11.3.0
 
-# Make data base, printed on Wed Jun  1 17:20:36 2022
+# Make data base, printed on Wed Jun  5 11:25:14 2024
 
 # Variables
 
@@ -16,7 +16,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # automatic
 ?F = $(notdir $?)
 # environment
-VSCODE_LOG_NATIVE = false
+VSCODE_CRASH_REPORTER_PROCESS_TYPE = extensionHost
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # automatic
@@ -24,11 +24,11 @@ VSCODE_LOG_NATIVE = false
 # automatic
 @F = $(notdir $@)
 # makefile
-CURDIR := /Users/demitrusbooker/projects/dsh
+CURDIR := /Users/demitrusbooker/Coding/qwasar_projects/dsh
 # makefile
 SHELL = /bin/sh
 # environment
-VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
+VSCODE_NLS_CONFIG = {"locale":"en-us","osLocale":"en-us","availableLanguages":{},"_languagePackSupport":true}
 # environment
 _ = /usr/bin/make
 # makefile (from `makefile', line 2)
@@ -36,37 +36,31 @@ CFLAGS = -Wall -Werror -Wextra -g -g3 -fsanitize=address
 # makefile (from `makefile', line 1)
 MAKEFILE_LIST :=  makefile
 # environment
-VSCODE_VERBOSE_LOGGING = true
-# environment
 __CFBundleIdentifier = com.microsoft.VSCode
-# environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/6w/q6w69px50qxcq4jdfs5254yr0000gn/T/vscode-ipc-c8796e98-4103-46ea-aaf2-ec6ef5631d40.sock
 # environment
 VSCODE_CWD = /
 # environment
-PATH = /opt/anaconda3/condabin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+PATH = /opt/anaconda3/condabin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/usr/local/go/bin:/Applications/Postgres.app/Contents/Versions/15/bin
 # environment
-LaunchInstanceID = EA32A986-D946-4FB3-8DCC-FEBE2DC239CE
-# environment
-VSCODE_LOG_STACK = false
+LaunchInstanceID = 9B3941F6-BCD9-4D3B-9DC0-AA26B4136AC9
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.Q26CfyoAVK/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.Ve1WP2q1gn/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
 CONDA_EXE = /opt/anaconda3/bin/conda
-# environment
-VSCODE_PIPE_LOGGING = true
 # makefile (from `makefile', line 5)
 OBJS = $(SRCS:.c=.o)
 # environment
-PWD = /Users/demitrusbooker/projects/dsh
+PWD = /Users/demitrusbooker/Coding/qwasar_projects/dsh
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+# environment
+MANPATH = /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man:/Library/Developer/CommandLineTools/usr/share/man:/Library/Developer/CommandLineTools/Toolchains/XcodeDefault.xctoolchain/usr/share/man:
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
@@ -74,7 +68,7 @@ HOME = /Users/demitrusbooker
 # default
 MAKEFILEPATH = $(shell /usr/bin/xcode-select -print-path 2>/dev/null || echo /Developer)/Makefiles
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/demitrusbooker/Library/Application Support/Code/CachedData/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5
+VSCODE_CODE_CACHE_PATH = /Users/demitrusbooker/Library/Application Support/Code/CachedData/dc96b837cf6bb4af9cd736aa3af08cf8279f7685
 # environment
 LOGNAME = demitrusbooker
 # environment
@@ -100,7 +94,7 @@ MAKE_VERSION := 3.81
 # environment
 USER = demitrusbooker
 # makefile
-.DEFAULT_GOAL := ALL
+.DEFAULT_GOAL := all
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
 # environment
@@ -114,7 +108,9 @@ TMPDIR = /var/folders/6w/q6w69px50qxcq4jdfs5254yr0000gn/T/
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /Users/demitrusbooker/Library/Application Support/Code/1.67.2-main.sock
+VSCODE_IPC_HOOK = /Users/demitrusbooker/Library/Application Support/Code/1.89-main.sock
+# environment
+MallocNanoZone = 0
 # makefile
 MAKEFLAGS = Rrqp
 # environment
@@ -122,11 +118,13 @@ MFLAGS = -Rrqp
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
 # makefile (from `makefile', line 3)
-MAIN = dsh
+MAIN = zsh
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.19038071.19038077
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.198877018.198877027
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
+# environment
+VSCODE_L10N_BUNDLE_LOCATION = 
 # automatic
 +F = $(notdir $+)
 # environment
@@ -142,13 +140,11 @@ LC_ALL = C
 # environment
 CONDA_PYTHON_EXE = /opt/anaconda3/bin/python
 # environment
-SECURITYSESSIONID = 186a6
+SECURITYSESSIONID = 186a3
 # automatic
 ^F = $(notdir $^)
 # default
 SUFFIXES := 
-# environment
-_CE_M = 
 # default
 .INCLUDE_DIRS = /usr/local/include
 # environment
@@ -156,11 +152,9 @@ MAKELEVEL := 0
 # environment
 LANG = C
 # environment
-VSCODE_PID = 435
-# environment
-_CE_CONDA = 
+VSCODE_PID = 1158
 # variable set hash-table stats:
-# Load=74/1024=7%, Rehash=0, Collisions=5/104=5%
+# Load=71/1024=7%, Rehash=0, Collisions=5/101=5%
 
 # Pattern-specific Variable Values
 
@@ -168,10 +162,10 @@ _CE_CONDA =
 
 # Directories
 
-# . (device 16777221, inode 18703168): 8 files, no impossibilities.
-# src (device 16777221, inode 18706224): 13 files, no impossibilities.
+# . (device 16777221, inode 18703168): 12 files, no impossibilities.
+# src (device 16777221, inode 18706224): 8 files, no impossibilities.
 
-# 21 files, no impossibilities in 2 directories.
+# 20 files, no impossibilities in 2 directories.
 
 # Implicit Rules
 
@@ -179,13 +173,7 @@ _CE_CONDA =
 
 # Files
 
-ALL: dsh
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-
-# Not a target:
-all:
+all: zsh
 #  Command-line target.
 #  Implicit rule search has been done.
 #  File does not exist.
@@ -220,7 +208,7 @@ src/internal.c:
 # Not a target:
 makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-21 17:21:28
+#  Last modified 2022-07-11 21:32:39
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -258,14 +246,6 @@ src/main.c:
 #  Modification time never checked.
 #  File has not been updated.
 
-dsh: src/env.o src/internal.o src/main.o src/my_printf.o src/utility.o
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  commands to execute (from `makefile', line 10):
-	$(CC) $(CFLAGS) -o $@ $(LINKERFLAG) $^
-	
-
 re: fclean all
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -287,15 +267,27 @@ src/utility.c:
 
 # Not a target:
 src/env.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
+#  Implicit rule search has been done.
+#  File does not exist.
 #  File has not been updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
 
 # Not a target:
 src/my_printf.c:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
+
+zsh: src/env.o src/internal.o src/main.o src/my_printf.o src/utility.o
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+#  commands to execute (from `makefile', line 10):
+	$(CC) $(CFLAGS) -o $@ $(LINKERFLAG) $^
+	
 
 debugger: src/env.c src/internal.c src/main.c src/my_printf.c src/utility.c
 #  Implicit rule search has not been done.
@@ -312,7 +304,10 @@ src/internal.o:
 #  File has not been updated.
 
 # files hash-table stats:
-# Load=20/1024=2%, Rehash=0, Collisions=0/46=0%
+ 
+make: *** No rule to make target `src/env.o', needed by `zsh'.  Stop.
+
+# Load=19/1024=2%, Rehash=0, Collisions=0/46=0%
 # VPATH Search Paths
 
 # No `vpath' search paths.
@@ -324,8 +319,6 @@ src/internal.o:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Wed Jun  1 17:20:36 2022
+# Finished Make data base on Wed Jun  5 11:25:14 2024
 
  
-make: *** No rule to make target `all'.  Stop.
-

@@ -108,12 +108,12 @@ bool run_internal(command_line_t* command_line) {
     return run_result;
 }
 
-// run an external command()
+/// run an external command()
 bool run_external(command_line_t* command_line) {
-    // ASSERT_COMMAND_LINE(command_line);
+    assert(command_line);
     char* argv[PATH_MAX] = {NULL};
     int i = 0;
-    // init argv
+    
     argv[i++] = command_line->command;
     while((argv[i++] = my_strtok(NULL, ' ')) != NULL) {
     }
@@ -122,38 +122,51 @@ bool run_external(command_line_t* command_line) {
     char** dsh_envp = dsh_allocate_envp();
     assert(dsh_envp);
     
-    // allows for two processes (shell itself and, ie., ls) to run at teh same time
-    pid_t pid = fork(); // two processes running
+    // allows for two processes (shell itself and, ie., ls) to run at the same time
+    pid_t pid = fork(); // two processes running; identical with one difference, when fork returns parent has non zero value, child == 0; parent has one job: wait for child to be done (line 119)
     if (pid > 0) {
         // parent - wait and clean-up
-        int status = 0xDEADBEEF; // signature/pattern to recognize in debugger; chose an esoteric value
+        int status; 
+        pid_t wpid = 0xDEADBEEF;
 		do { 
             // wait for child to terminate before moving on
-			pid_t wpid = waitpid(pid, &status, WUNTRACED); // status should be overwritten by wpid()
+			wpid = waitpid(pid, &status, WUNTRACED); // status should be overwritten by wpid(); wait for childto be done
             assert((unsigned int)wpid != 0xDEADBEEF);
-		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-        // bool success = dsh_free_envp(dsh_envp);
-        // assert(success);
-        run_result = true;
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status)); //sub responsibility: if. term becaue of signa, report that it happened (L123)
+        if (/*(wpid == -1) {*/ WIFSIGNALED(status)) { //&& WTERMSIG(status) == SIGSEGV) { // just checking for a signal; can print out wtermstatus to understand what the signal is
+            //my_printf("segmentation fault\n");
+            char* err = "&&dsh: segmentation fault  ./main_with_segfault\n";
+            write(2, err, 46);
+        }
+        bool success = dsh_free_envp(dsh_envp);
+        assert(success);
+        run_result = wpid != -1 && WEXITSTATUS(status) != EXIT_FAILURE; //IF VALID PID AND EXIT PAIRT IS FAILUR (WHICH IS ALSO TRUE) Then run result is false
     } else if (pid == 0) {
-        // child - run external command
+        // attempt ot execute user input directly
+        // if fail, search path
+        // if succeeds, program child process ceases to exist and gets replaced by commandline->command
+        // bug fix: never initially tried to run exactly what the user input
+        execve(command_line->command, argv, dsh_envp);
+        // child- run external command
+        // if user input doesn't work, now will look along PATH
         const char* path = dsh_enumerate_env_var("PATH", ":");
         while (path) {
             char path_buffer[PATH_MAX] = {'\0'};
-            // sprintf(path_buffer, "%s/%s", path, command_line->command);
-            strcpy(path_buffer, path);
+            my_strcpy(path_buffer, path);
             char* new_string = my_strjoin(path, command_line->command, true);
             // replaces content of copied parent informatio with child information, like ls
             // shell would be replaced with exec call,  because don't want shell replaced and still running, you fork and call exec for child process
             execve(new_string, argv, dsh_envp);
+            free(new_string);
             path = dsh_enumerate_env_var(NULL, ":");
         }
-        // ADD ERROR MESSAGE
+        bool success = dsh_free_envp(dsh_envp);
+        assert(success);
+        exit(EXIT_FAILURE);
     } else {
         perror("fork()");
     }
-    bool success = dsh_free_envp(dsh_envp);
-    assert(success);
+
     return run_result;
 }
 
@@ -168,15 +181,20 @@ int main(int argc, char* argv[], char* envp[]) {
     command_line_t command_line = {0};
     size_t command_line_n = 0;
     char* command_line_buffer = NULL;
+    
     // create copy of envp for use OUTSIDE of main fx
     bool success = dsh_allocate_environment((char**)envp);
     assert(success);
 
     while (true) {
         // display_prompt(NULL);
-        my_printf("dsh> ");
+        my_printf("[dsh]> ");
         // retrieve arguments passed by user
         ssize_t nread = getline(&command_line_buffer, &command_line_n, stdin);
+        // printf("~~~%ld\n", nread);
+        if (nread == -1) {
+            exit(EXIT_FAILURE);
+        }
         assert(nread != 0);
         assert(command_line_buffer);
         command_line_buffer[strlen(command_line_buffer) - 1] = '\0';

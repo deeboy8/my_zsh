@@ -67,7 +67,7 @@ bool dsh_allocate_environment(char *env[]) {
   // initiailize
   g_dsh_environment->count = env_var_count;
   for (size_t i = 0; i < g_dsh_environment->count; i++) {
-    char *equal_sep = my_strchr(env[i], '=');
+    char* equal_sep = my_strchr(env[i], '=');
     assert(equal_sep);
     // terminate name string, and point ptr to value string
     *equal_sep++ = '\0';
@@ -262,7 +262,8 @@ char **dsh_allocate_envp() {
 bool update_variable_value(char* name, char* value) {
   assert(value);
   bool updated = false;
-  // find variable and replace value
+  
+  // find OLDPWD variable and replace value
   for (size_t i = 0; i < g_dsh_environment->count; i++) {
     if (STRING_EQUAL(name, g_dsh_environment->variables[i].name)) {
       free(g_dsh_environment->variables[i].value);

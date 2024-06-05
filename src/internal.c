@@ -83,7 +83,7 @@ bool dsh_cd(command_line_t *command_line) {
     } else if (my_strcmp(path, "-") == 0) {
         char buffer[PATH_MAX] = {'\0'};
         my_strcpy(buffer, temp);
-        puts(buffer);
+        my_printf("%s\n", buffer);
         path = buffer;
         upgrade = update_variable_value("PWD", path);
     }
