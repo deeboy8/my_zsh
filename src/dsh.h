@@ -15,7 +15,7 @@ static const char default_prompt[] = "dsh> ";
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-// TGN: djg - make const so build works
+
 static const char dsh_exit_command[] = "exit";
 static const char dsh_echo_command[] = "echo";
 static const char dsh_print_working_directory_command[] = "pwd";
