@@ -31,7 +31,7 @@ static const char dsh_unsetenv_environment[] = "unsetenv";
 
 // hold command line information
 typedef struct {
-  int wordcount;
+  int wordcount; 
   char *command;
   char *args[];
 } command_line_t;
@@ -69,18 +69,15 @@ int my_printf(char *restrict format, ...);
 char *my_readline(int fd);
 
 // which
-// char* which(char* path, env_vars_t* DSH_env, int var_count);
 bool is_executable(char *folder);
 
 // utility
 int my_strcmp(const char *s1, const char *s2);
 char *my_strcat(char *s1, const char *s2);
 char *my_strtok(char *path, char seperator);
-// bool display_prompt(void);
 int get_count(char *env[]);
 char *my_strjoin(char const *s1, char const *s2, bool flag);
 void *my_realloc(void *mem_ptr, int count);
-// char* my_strdup(const char* s1);
 char *my_strcpy(char *dest, const char *src);
 size_t my_strlen(const char *str);
 void my_puts(char const *s);
@@ -94,7 +91,4 @@ bool update_variable_value(char* name, char* value);
 char* get_oldpwd_value();
 bool check_for_env(char* name);
 
-// add a struct that only holds count of env var_string
-// this can be updated and passed around as necessary to hold accurate count if
-// vars added or deleted
 #endif

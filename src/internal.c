@@ -33,35 +33,6 @@ bool dsh_pwd(command_line_t *command_line) {
   return true;
 }
 
-
-
-// TBN: djg - I *think* 'cd -' works differently than you've interpreted it:
-//  [cd(1p) - Linux manual page](https://tinyurl.com/2aoaap4b)
-// In that I don't believe it needs a stack/linked-list but rather a single
-// OLDPWD. Look at this interaction w/the real zsh:
-//
-//  gitpod /workspace/dsh (main) $ pwd
-//  /workspace/dsh
-//  gitpod /workspace/dsh (main) $ ls
-//  dsh  makefile  src
-//  gitpod /workspace/dsh (main) $ cd src
-//  gitpod /workspace/dsh/src (main) $ pwd
-//  /workspace/dsh/src
-//  gitpod /workspace/dsh/src (main) $ cd -
-//  /workspace/dsh
-//  gitpod /workspace/dsh (main) $ cd -
-//  /workspace/dsh/src
-//  gitpod /workspace/dsh/src (main) $ cd -
-//  /workspace/dsh
-//  gitpod /workspace/dsh (main) $ cd -
-//  /workspace/dsh/src
-//  gitpod /workspace/dsh/src (main) $
-//
-// Notice how it doesn't maintain all previous dirs, but rather just the last.
-// That is, 'cd -' toggles between the current and previous (OLDPWD) dir...I
-// think😎.
-
-
 // command to change directories
 bool dsh_cd(command_line_t *command_line) { 
     assert(command_line);
@@ -76,7 +47,7 @@ bool dsh_cd(command_line_t *command_line) {
     assert(pwd);
 
     // set oldpwd to pwd
-    bool upgrade = update_variable_value("OLDPWD", pwd);
+    // bool upgrade = update_variable_value("OLDPWD", pwd);
 
     if (!path) {
         path = dsh_getenv("HOME");
@@ -85,7 +56,8 @@ bool dsh_cd(command_line_t *command_line) {
         my_strcpy(buffer, temp);
         my_printf("%s\n", buffer);
         path = buffer;
-        upgrade = update_variable_value("PWD", path);
+        bool upgrade = update_variable_value("PWD", path);
+        assert(upgrade);
     }
     free(temp);
     

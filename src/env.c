@@ -35,6 +35,7 @@ static int get_variable_count(char *env[]) {
   return count;
 }
 
+//
 const char *dsh_enumerate_env_var(const char *name, const char *delimiter) {
   static char *env_var_name = NULL;
   char *value = NULL;
@@ -53,11 +54,11 @@ const char *dsh_enumerate_env_var(const char *name, const char *delimiter) {
   return value;
 }
 
-// copy env to memory
-// allows access to env outside of main function
+//copy each directory path from PATH envp variable
+//will be accessible via global variable g_dsh_enviorment
 bool dsh_allocate_environment(char *env[]) {
   assert(g_dsh_environment == NULL);
-  // allocate
+  //determine number of variables found in PATH envp variable
   int env_var_count = get_variable_count(env);
   assert(env_var_count > 0);
   g_dsh_environment = malloc(sizeof(dsh_environment_t) +
@@ -239,24 +240,28 @@ bool dsh_free_envp(char *dsh_envp[]) {
   return true;
 }
 
-// allocate a 'char*' envp[] for execve()
+//
 char **dsh_allocate_envp() {
-  assert(g_dsh_environment);
-  size_t size = sizeof(char *) * g_dsh_environment->count + 1;
-  char **envp = malloc(size);
-  assert(envp);
-  memset(envp, 0, size);
+    //global variable
+    assert(g_dsh_environment);
+    //determine size of mem to allocate on heap
+    //will create an array of ptrs pointing to each envp variable of the system environment
+    //https://man7.org/linux/man-pages/man7/environ.7.html
+    size_t size = sizeof(char *) * g_dsh_environment->count + 1;
+    char **envp = malloc(size);
+    assert(envp);
+    //initialize newly allocated mem with 0
+    memset(envp, 0, size);
 
-  for (size_t i = 0; i < g_dsh_environment->count - 1; i++) {
-    // char env_var_buffer[PATH_MAX]; // local env buffer
-    envp[i] = my_strjoin(g_dsh_environment->variables[i].name,
-                         g_dsh_environment->variables[i].value, false);
-    // strcpy(env_var_buffer, variable);
-    // envp[i] = //strdup(env_var_buffer);
-    assert(envp[i]);
-  }
+    for (size_t i = 0; i < g_dsh_environment->count - 1; i++) {
+        //using custome fx, seperate the key and value of the env variable
+        //place each into appropriate memory location(key = name, value = value)
+        envp[i] = my_strjoin(g_dsh_environment->variables[i].name,
+                                g_dsh_environment->variables[i].value, false);
+        assert(envp[i]);
+    }
 
-  return envp;
+    return envp;
 }
 
 bool update_variable_value(char* name, char* value) {
