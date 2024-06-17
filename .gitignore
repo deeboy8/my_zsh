@@ -1,2 +1,3 @@
 *.vscode
 *.o
+main_with_segfault*
