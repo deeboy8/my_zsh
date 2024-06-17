@@ -35,21 +35,24 @@ static int get_variable_count(char *env[]) {
   return count;
 }
 
-//
+//will check each individual executable name within PATH and assign it the appropriate value
 const char *dsh_enumerate_env_var(const char *name, const char *delimiter) {
   static char *env_var_name = NULL;
   char *value = NULL;
   if (env_var_name == NULL || name != NULL) {
     free(env_var_name);
-    // get value of PATH env var
+    //get value of PATH env var name
     env_var_name = dsh_getenv(name);
     assert(env_var_name);
+    //allocate memory for value of name returned from dsh_getenv fx
     env_var_name = strdup(env_var_name);
     assert(env_var_name);
+    //obtain value of env_var_name by parsing using strtok and return value
+    //https://man7.org/linux/man-pages/man3/strtok.3.html
     value = strtok(env_var_name, delimiter);
   } else {
-    value = strtok(NULL, delimiter);
-  }
+        value = strtok(NULL, delimiter);
+    }
 
   return value;
 }
@@ -107,10 +110,14 @@ bool check_for_env(char* name) {
     return is_present;
 }
 
+//will walk along envp variables to find the variable that matches name
 char *dsh_getenv(const char *name) {
   assert(g_dsh_environment);
   assert(name);
   char *value = NULL;
+  //loop over each name of envp variable comparing it to name passed as parameter
+  //on success, will set the corresponding value of name to value 
+  //will return value
   for (size_t i = 0; i < g_dsh_environment->count; i++) {
     if (my_strcmp(name, g_dsh_environment->variables[i].name) == 0) {
       value = g_dsh_environment->variables[i].value;

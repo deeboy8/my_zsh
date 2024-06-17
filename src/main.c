@@ -159,8 +159,10 @@ bool run_external(command_line_t* command_line) {
         //if user input doesn't work, will walk PATH trying each folder 
         const char* path = dsh_enumerate_env_var("PATH", ":");
         while (path) {
+            //create empty buffer space and initialize with null terminating character
             char path_buffer[PATH_MAX] = {'\0'};
             my_strcpy(path_buffer, path);
+            
             char* new_string = my_strjoin(path, command_line->command, true);
             execve(new_string, argv, dsh_envp);
             free(new_string);
