@@ -1,5 +1,81 @@
 #include "dsh.h"
 
+bool print_prompt() {
+    my_printf("dsh>");
+    return true;
+}
+
+//custom function taking capitalized text passed by user and changing to lowercase
+char* string_tolower(char* string) {
+    int len = strlen(string);
+    char* string_tolower = malloc(sizeof(char) * len + 1);
+    if (!string_tolower)
+            return NULL;
+    int index = 0;
+    while (string[index]) {
+        if (string[index] > 64 && string[index] < 91)
+            string_tolower[index] = string[index] + 32;
+        index++;
+    }
+    string_tolower[index] = '\0';
+    return string_tolower;
+}
+
+bool is_equal(char* string1, char* string2) {
+    assert(string1);
+    assert(string2);
+    return strcmp(string1, string2) == 0;
+}
+
+//recreation of c runtime libary fx strcmp()
+int	my_strcmp(const char *s1, const char *s2)
+{
+	int index;
+	index = 0;
+
+    //loop over both strings checking each char
+    //returns a numeric value reflective of difference or 0 if exact same
+	while (s1[index] != '\0' && s2[index] != '\0')
+	{
+		if (s1[index] != s2[index])
+			return (s1[index] - s2[index]);
+		++index;
+	}
+	return ((unsigned char)s1[index] - (unsigned char)s2[index]);
+}
+
+//parses a line passed by user and tokenize 
+char* my_strtok(char* path, char seperator) {
+	static char* current_path = NULL;
+	static char* captured_path = NULL;
+
+	if (path != NULL) {
+		current_path = path; // trailing pointer
+		captured_path = path; // leading pointer
+	}
+
+	if (captured_path == NULL) {
+		current_path = NULL;
+	} else {
+		current_path = captured_path;
+		// loop across until captured_path hits seperator (delimiter)
+		while (*captured_path != '\0' && *captured_path != seperator) {
+			captured_path++;
+		}
+		assert(*captured_path == seperator || *captured_path == '\0');
+		// replace seperator with null terminating char to tokenize portion between captured and current ptrs
+		if (*captured_path == seperator) {
+			*captured_path = '\0';
+			captured_path++;
+		} else if (*captured_path == '\0') {
+			captured_path = NULL;
+		} else {
+			assert(false);
+		}
+	}
+	return current_path;
+}
+
 char* my_strcpy(char* dest, const char* src) {
 	int index;
 

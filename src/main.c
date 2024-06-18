@@ -1,94 +1,97 @@
 #include "dsh.h"
 
-// #define PROMPT "dsh>"
+
 #define SPACE ' '
-// #define ARG_MAX 128
 
+// bool print_prompt() {
+//     my_printf("dsh>");
+//     return true;
+// }
 
-bool print_prompt() {
-    /*int myprintf =*/ my_printf("dsh>");
-    return true;
-}
+// //custom function taking capitalized text passed by user and changing to lowercase
+// char* string_tolower(char* string) {
+//     int len = strlen(string);
+//     char* string_tolower = malloc(sizeof(char) * len + 1);
+//     if (!string_tolower)
+//             return NULL;
+//     int index = 0;
+//     while (string[index]) {
+//         if (string[index] > 64 && string[index] < 91)
+//             string_tolower[index] = string[index] + 32;
+//         index++;
+//     }
+//     string_tolower[index] = '\0';
+//     return string_tolower;
+// }
 
-char* string_tolower(char* string) {
-    int len = strlen(string);
-    char* string_tolower = malloc(sizeof(char) * len + 1);
-    if (!string_tolower)
-            return NULL;
-    int index = 0;
-    while (string[index]) {
-        if (string[index] > 64 && string[index] < 91)
-            string_tolower[index] = string[index] + 32;
-        index++;
-    }
-    string_tolower[index] = '\0';
-    return string_tolower;
-}
+// bool is_equal(char* string1, char* string2) {
+//     assert(string1);
+//     assert(string2);
+//     return strcmp(string1, string2) == 0;
+// }
 
-bool is_equal(char* string1, char* string2) {
-    assert(string1);
-    assert(string2);
-    return strcmp(string1, string2) == 0;
-}
+// //recreation of c runtime libary fx strcmp()
+// int	my_strcmp(const char *s1, const char *s2)
+// {
+// 	int index;
+// 	index = 0;
 
-int	my_strcmp(const char *s1, const char *s2)
-{
-	int index;
+//     //loop over both strings checking each char
+//     //returns a numeric value reflective of difference or 0 if exact same
+// 	while (s1[index] != '\0' && s2[index] != '\0')
+// 	{
+// 		if (s1[index] != s2[index])
+// 			return (s1[index] - s2[index]);
+// 		++index;
+// 	}
+// 	return ((unsigned char)s1[index] - (unsigned char)s2[index]);
+// }
 
-	index = 0;
-	while (s1[index] != '\0' && s2[index] != '\0')
-	{
-		if (s1[index] != s2[index])
-			return (s1[index] - s2[index]);
-		++index;
-	}
-	return ((unsigned char)s1[index] - (unsigned char)s2[index]);
-}
+// //parses a line passed by user and tokenize 
+// char* my_strtok(char* path, char seperator) {
+// 	static char* current_path = NULL;
+// 	static char* captured_path = NULL;
 
-//parse the line passed by user to capture each command and associated args 
-char* my_strtok(char* path, char seperator) {
-	static char* current_path = NULL;
-	static char* captured_path = NULL;
+// 	if (path != NULL) {
+// 		current_path = path; // trailing pointer
+// 		captured_path = path; // leading pointer
+// 	}
 
-	if (path != NULL) {
-		current_path = path; // trailing pointer
-		captured_path = path; // leading pointer
-	}
+// 	if (captured_path == NULL) {
+// 		current_path = NULL;
+// 	} else {
+// 		current_path = captured_path;
+// 		// loop across until captured_path hits seperator (delimiter)
+// 		while (*captured_path != '\0' && *captured_path != seperator) {
+// 			captured_path++;
+// 		}
+// 		assert(*captured_path == seperator || *captured_path == '\0');
+// 		// replace seperator with null terminating char to tokenize portion between captured and current ptrs
+// 		if (*captured_path == seperator) {
+// 			*captured_path = '\0';
+// 			captured_path++;
+// 		} else if (*captured_path == '\0') {
+// 			captured_path = NULL;
+// 		} else {
+// 			assert(false);
+// 		}
+// 	}
+// 	return current_path;
+// }
 
-	if (captured_path == NULL) {
-		current_path = NULL;
-	} else {
-		current_path = captured_path;
-		// loop across until captured_path hits delimiter
-		while (*captured_path != '\0' && *captured_path != seperator) {
-			captured_path++;
-		}
-		assert(*captured_path == seperator || *captured_path == '\0');
-		// replace seperator with null char and terminate token
-		if (*captured_path == seperator) {
-			*captured_path = '\0';
-			captured_path++;
-		} else if (*captured_path == '\0') {
-			captured_path = NULL;
-		} else {
-			assert(false);
-		}
-	}
-	return current_path;
-}
-
-// compare if command passed (command) is same as #define command (dsh_command)
+//compare cmd passed against macro names to run appropriate code
 bool is_internal_command(const char* dsh_command, const char* command) {
     assert(command);
     assert(dsh_command);
     return strcmp(dsh_command, command) == 0;
 }
 
-//check the appropriate internal command to run passed by user input
+//check if cmd passed is a cmd that is "internal" to the shell program
 bool run_internal(command_line_t* command_line) {
     assert(command_line);
     bool run_result = false;
-    
+
+    //check if names passed match an internal cmd
     if (is_internal_command(dsh_echo_command, command_line->command)) {
         run_result = dsh_echo(command_line);
     } else if (is_internal_command(dsh_print_working_directory_command, command_line->command)) {
@@ -120,6 +123,8 @@ bool run_external(command_line_t* command_line) {
     
     //fill dynamic argument array to be passed to child process for holding PATH directories
     argv[i++] = command_line->command;
+    //tokenization of string initiated prior to current call
+    //therefore passing NULL in place of string as first parameter
     while((argv[i++] = my_strtok(NULL, ' ')) != NULL) {
     }
 
@@ -134,35 +139,48 @@ bool run_external(command_line_t* command_line) {
     pid_t pid = fork(); 
     if (pid > 0) {
         int status;
-        //initialize parent process mem space with 0xDEADBEEF 
+        //set parent process id for easy identification (debugging purposes)?????????
+        //TODO said they both get this, then shouldn't it be outisde of the parent code block
+        //TODO said when they both wake up from fork, both awaitign commands. But based on waitpid(), shouldn't child be returned first and processed?
+        //TODO why does void and null make things tricky?
         pid_t wpid = 0xDEADBEEF;
         //requesting status of child process on first portion of do-while loop
-        //if successful, parent process will continue to check status of child process, waiting for it's completion
-		do { 
-            //checking status of child process
+        //if successful, parent process will continue to check status for child process, waiting for it's completion and termination
+		do {
+            //TODO understand why would return a pid not a value providing status info
+            //passing in pid from fork of child, ptr to status of what child returns, untraced flag used by wait
+            //waiting until pid, child process, dies
+            //inifiinte loop waiting for child shell to die/go away
+            //must avoid spurious wake ups so must put in a inifinite while loop
 			wpid = waitpid(pid, &status, WUNTRACED); 
             //ensure parent process has been assigned a pid number
             assert((unsigned int)wpid != 0xDEADBEEF);
+        //TODO wouldn't you want an exit that is normal for WIFEXITED
+        //ensured exited appropriately
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-        //if segfault observed, will print to stdout
+        //if status returned due to uncaught signal, will print error msg to stdout
+        //TODO best to identify what the actual error is and returning it, strerr() would be best, part of family of fx like perror
         if (WIFSIGNALED(status)) { 
             // char err[] = "&&dsh: segmentation fault  ./main_with_segfault\n";
             // write(FILENO_STDERR????, err, sizeof(err));
             char* err = "&&dsh: segmentation fault  ./main_with_segfault\n"; //TODO
             write(2, err, 46);
         }
-        //upon success, free each pointer to variables in environment
+        //free each pointer in array that holds address of each variable copied from envp
         bool success = dsh_free_envp(dsh_envp);
         assert(success);
+        //check to ensure successful exit of child process
+        //TODO is this correct??????
         run_result = wpid != -1 && WEXITSTATUS(status) != EXIT_FAILURE;
     //child process
     } else if (pid == 0) {
         //execute user input as passed on cl
-        //execve() will not return anything upon success
-        execve(command_line->command, argv, dsh_envp); //TODO should set a erro msg
-        //if no success, will walk PATH appending cmd passed by user to end of directory obtained from PATH
+        //success contingent upon providing proper pathway to cmd
+        //exec will overwrite memory from parent and replace with code from executable it searched for 
+        execve(command_line->command, argv, dsh_envp); 
+        //if unsuccessful, will walk PATH appending cmd passed by user to end of directory
         //dsh_enumerate_env_var will take PATH as the initial name (first param)
-        //after first call will pass NULL in when called in while loop
+        //after first call will pass NULL
         const char* path = dsh_enumerate_env_var("PATH", ":");
         while (path) {
             char path_buffer[PATH_MAX] = {'\0'};
@@ -173,10 +191,13 @@ bool run_external(command_line_t* command_line) {
             free(new_string);
             path = dsh_enumerate_env_var(NULL, ":");
         }
+        //upon completion, free allocated env variables
         bool success = dsh_free_envp(dsh_envp);
         assert(success);
+        //will wake up parent and terminate child process
         exit(EXIT_FAILURE);
     } else {
+        //return value of fork() is -1
         perror("fork()");
     }
 

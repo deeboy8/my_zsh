@@ -35,11 +35,12 @@ static int get_variable_count(char *env[]) {
   return count;
 }
 
-//will check each individual executable name within PATH and assign it the appropriate value
+//acquire different directories based on delimiter found in PATH
+//TODO change name to PATH bc we are only searching that env variable
 const char *dsh_enumerate_env_var(const char *name, const char *delimiter) {
-  static char *env_var_name = NULL;
-  char *value = NULL;
-  if (env_var_name == NULL || name != NULL) {
+    static char *env_var_name = NULL;
+    char *value = NULL;
+    if (env_var_name == NULL || name != NULL) {
     free(env_var_name);
     //get value of PATH env var name
     env_var_name = dsh_getenv(name);
@@ -50,11 +51,11 @@ const char *dsh_enumerate_env_var(const char *name, const char *delimiter) {
     //obtain value of env_var_name by parsing using strtok and return value
     //https://man7.org/linux/man-pages/man3/strtok.3.html
     value = strtok(env_var_name, delimiter);
-  } else {
+    } else {
         value = strtok(NULL, delimiter);
     }
 
-  return value;
+    return value;
 }
 
 //copy each variable the array of ptrs in environ ptr points to
