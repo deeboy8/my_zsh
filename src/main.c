@@ -123,7 +123,7 @@ bool run_external(command_line_t* command_line) {
     while((argv[i++] = my_strtok(NULL, ' ')) != NULL) {
     }
 
-    //allocate memory space for and copy directories found in PATH envp variable
+    //allocate memory space for and copy directories found in envp variable
     //will be used to find external cmd passed by user
     bool run_result = false;
     char** dsh_envp = dsh_allocate_envp();
@@ -136,7 +136,7 @@ bool run_external(command_line_t* command_line) {
         int status;
         //initialize parent process mem space with 0xDEADBEEF 
         pid_t wpid = 0xDEADBEEF;
-        //obtaining status of child process on first portion of do-while loop
+        //requesting status of child process on first portion of do-while loop
         //if successful, parent process will continue to check status of child process, waiting for it's completion
 		do { 
             //checking status of child process
