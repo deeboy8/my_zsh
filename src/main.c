@@ -109,13 +109,16 @@ bool run_internal(command_line_t* command_line) {
     return run_result;
 }
 
-/// run an external command()
+//run an external command() passed on the command line
+//command checked to be internal first
+//will invoke fork() and exec() to walk PATH directory to find executable which matches users request 
 bool run_external(command_line_t* command_line) {
     assert(command_line);
+    //allocate array of buffer space with size equal to c runtime path length as defined by operating sys/file sys
     char* argv[PATH_MAX] = {NULL};
     int i = 0;
     
-    //filling dynamic argument array to be passed to child process
+    //fill dynamic argument array to be passed to child process for holding PATH directories
     argv[i++] = command_line->command;
     while((argv[i++] = my_strtok(NULL, ' ')) != NULL) {
     }
@@ -155,14 +158,16 @@ bool run_external(command_line_t* command_line) {
     //child process
     } else if (pid == 0) {
         //execute user input as passed on cl
-        execve(command_line->command, argv, dsh_envp); 
-        //if user input doesn't work, will walk PATH trying each folder 
+        //execve() will not return anything upon success
+        execve(command_line->command, argv, dsh_envp); //TODO should set a erro msg
+        //if no success, will walk PATH appending cmd passed by user to end of directory obtained from PATH
+        //dsh_enumerate_env_var will take PATH as the initial name (first param)
+        //after first call will pass NULL in when called in while loop
         const char* path = dsh_enumerate_env_var("PATH", ":");
         while (path) {
-            //create empty buffer space and initialize with null terminating character
             char path_buffer[PATH_MAX] = {'\0'};
             my_strcpy(path_buffer, path);
-            
+            //concatenate result of PATH directory with command passed by user
             char* new_string = my_strjoin(path, command_line->command, true);
             execve(new_string, argv, dsh_envp);
             free(new_string);
@@ -186,7 +191,8 @@ void display_prompt(const char* prompt) {
 //reads commands from user in an infinite loop until command exit is passed
 int main(int argc, char* argv[], char* envp[]) {
     // assert(argc);
-    // assert(argv); //TODO asserting for a purpsoe or an unused check, pragma which turns it off, part of the build in makefile
+    // assert(argv); 
+    //TODO asserting for a purpsoe or an unused check, pragma which turns it off, part of the build in makefile
     
     command_line_t command_line = {0};
     size_t cmd_line_buffer_length = 0; 

@@ -57,28 +57,33 @@ const char *dsh_enumerate_env_var(const char *name, const char *delimiter) {
   return value;
 }
 
-//copy each directory path from PATH envp variable
-//will be accessible via global variable g_dsh_enviorment
+//copy each variable the array of ptrs in environ ptr points to
+//https://man7.org/linux/man-pages/man7/environ.7.html
+//will allow for access of variables outside of main via global variable g_dsh_enviorment
 bool dsh_allocate_environment(char *env[]) {
   assert(g_dsh_environment == NULL);
-  //determine number of variables found in PATH envp variable
+  //determine number of variables found in envp/environ variable
   int env_var_count = get_variable_count(env);
   assert(env_var_count > 0);
+  //allocate mem space on the heap to hold the dsh_environment_t struct data (holds var count and an array of structs) and
+  //the dsh_environement_t struct (holds the name of each name and its corresponding value)
   g_dsh_environment = malloc(sizeof(dsh_environment_t) +
                              (sizeof(dsh_env_var_t) * (env_var_count + 1)));
   assert(g_dsh_environment);
 
-  // initiailize
+  //assign number of variables in envp 
   g_dsh_environment->count = env_var_count;
+  //loop over envp adding name and value of each variable to element in struct
   for (size_t i = 0; i < g_dsh_environment->count; i++) {
+    //seperate name and value based on delimiter
     char* equal_sep = my_strchr(env[i], '=');
     assert(equal_sep);
-    // terminate name string, and point ptr to value string
+    //terminate name string with null terminating char by replacing '=' 
     *equal_sep++ = '\0';
-    // copy name
+    //allocate memory for name element of struct and assign 
     g_dsh_environment->variables[i].name = my_strdup(env[i]);
     assert(g_dsh_environment->variables[i].name);
-    // copy value
+    //allocate memory for value element of struct and assign 
     g_dsh_environment->variables[i].value = my_strdup(equal_sep);
     assert(g_dsh_environment->variables[i].value);
   }
@@ -249,19 +254,19 @@ bool dsh_free_envp(char *dsh_envp[]) {
 
 //
 char **dsh_allocate_envp() {
-    //global variable
+    //assert global variable is valid
     assert(g_dsh_environment);
-    //determine size of mem to allocate on heap
-    //will create an array of ptrs pointing to each envp variable of the system environment
+    //determine size of mem to allocate on heap using malloc function
+    //will create an array of ptrs holding address of each envp variable of the system environment
     //https://man7.org/linux/man-pages/man7/environ.7.html
     size_t size = sizeof(char *) * g_dsh_environment->count + 1;
     char **envp = malloc(size);
     assert(envp);
-    //initialize newly allocated mem with 0
+    //initialize newly allocated mem with zeros
     memset(envp, 0, size);
 
     for (size_t i = 0; i < g_dsh_environment->count - 1; i++) {
-        //using custome fx, seperate the key and value of the env variable
+        //using custom fx, seperate the key and value of the env variable
         //place each into appropriate memory location(key = name, value = value)
         envp[i] = my_strjoin(g_dsh_environment->variables[i].name,
                                 g_dsh_environment->variables[i].value, false);
