@@ -1,31 +1,36 @@
 #include "dsh.h"
 
-// maintain newly created envp/ copy of envp
+//hold the name and value of each envp variable
 typedef struct {
   char *name;
   char *value;
 } dsh_env_var_t;
 
-// maintain
+//hold count of envp variables and an array of ptr address to each string
 typedef struct {
   size_t count;
   dsh_env_var_t variables[];
 } dsh_environment_t;
 
+//global variable for accessing envp outside of main fx
 static dsh_environment_t *g_dsh_environment = NULL;
 
-char *my_strchr(const char *s, int c) {
-  char cha = (char)c;
-  while (*s) {
-    if (*s == cha)
-      return ((char *)s);
-    s++;
-  }
-  if (cha == '\0')
-    return ((char *)s);
+//custom fx similar to strchr()
+//https://www.man7.org/linux/man-pages/man3/strchr.3.html
+//returns ptr to first occurance of char found in string
+char* my_strchr(const char *s, int c) {
+    char cha = (char)c;
+    while (*s) {
+        if (*s == cha)
+            return ((char *)s);
+        s++;
+    }
+    if (cha == '\0')
+        return ((char *)s);
+
   return (NULL);
 }
-
+//loop over env array to determine count of variables 
 static int get_variable_count(char *env[]) {
   assert(env);
   int count = 0;
@@ -35,8 +40,7 @@ static int get_variable_count(char *env[]) {
   return count;
 }
 
-//acquire different directories based on delimiter found in PATH
-//TODO change name to PATH bc we are only searching that env variable
+//grab each directory based on delimiter found in PATH variable
 const char *dsh_enumerate_env_var(const char *name, const char *delimiter) {
     static char *env_var_name = NULL;
     char *value = NULL;
@@ -91,18 +95,20 @@ bool dsh_allocate_environment(char *env[]) {
   return true;
 }
 
-bool check_for_env_var(char *name) {
-    bool is_present = false;
-    
-    for (size_t i = 0; i < g_dsh_environment->count; i++) {
-        if (STRING_EQUAL(name, g_dsh_environment->variables[i].name)) {
-            is_present = true;
-            break;
-        }
-    }
-    return is_present;
-}
 
+// bool check_for_env_var(char *name) {
+//     bool is_present = false;
+    
+//     for (size_t i = 0; i < g_dsh_environment->count; i++) {
+//         if (STRING_EQUAL(name, g_dsh_environment->variables[i].name)) {
+//             is_present = true;
+//             break;
+//         }
+//     }
+//     return is_present;
+// }
+
+//detemine if env variable present 
 bool check_for_env(char* name) {
     bool is_present = false;
 
@@ -112,7 +118,7 @@ bool check_for_env(char* name) {
             break;
         }
     }
-    // printf("%d\n", is_present);
+
     return is_present;
 }
 
@@ -133,9 +139,11 @@ char *dsh_getenv(const char *name) {
   return value;
 }
 
-// implement the 'env' command
+//implement the printenv cmd (mac)
 bool dsh_env() {
   assert(g_dsh_environment);
+  //loop over each struct in dsh_env_var_t and concatenate name and value
+  //print to stdout
   for (size_t i = 0; i < g_dsh_environment->count; i++) {
     my_printf("%s=%s\n", g_dsh_environment->variables[i].name,
               g_dsh_environment->variables[i].value);
@@ -143,21 +151,25 @@ bool dsh_env() {
   return true;
 }
 
+//recreation of realloc adding additional memory to global g_dsh_environment
+//will be called when user wishes to add an env variable 
 bool grow() {
-  size_t size = sizeof(dsh_environment_t) +
+    //account for new size of memory necessary; adding an additional dsh_env_var_t 
+    size_t size = sizeof(dsh_environment_t) +
                 (sizeof(dsh_env_var_t) * g_dsh_environment->count +
-                 sizeof(dsh_env_var_t));
-  dsh_environment_t *new_env = malloc(size);
-  assert(new_env);
-  memset(new_env, 0, size);
-  memcpy(new_env, g_dsh_environment, size - sizeof(dsh_env_var_t));
-  free(g_dsh_environment);
-  g_dsh_environment = new_env;
-  g_dsh_environment->count++;
+                    sizeof(dsh_env_var_t));
+    dsh_environment_t *new_env = malloc(size);
+    assert(new_env);
+    memset(new_env, 0, size);
+    memcpy(new_env, g_dsh_environment, size - sizeof(dsh_env_var_t));
+    free(g_dsh_environment);
+    g_dsh_environment = new_env;
+    g_dsh_environment->count++;
 
-  return true;
+    return true;
 }
 
+//add an env variable like c runtime fx setenv
 bool dsh_setenv(command_line_t *command_line) {
   assert(command_line);
   // retrieve name from command line
@@ -167,64 +179,66 @@ bool dsh_setenv(command_line_t *command_line) {
   assert(value);
   bool updated = false;
 
-  // check if variable already exists
-  // dsh_env_var_t* empty = NULL;
+  //check if variable already exists, set value to users perference
   for (size_t i = 0; i < g_dsh_environment->count; i++) {
     if (STRING_EQUAL(name, g_dsh_environment->variables[i].name)) {
-      free(g_dsh_environment->variables[i].value);
-      g_dsh_environment->variables[i].value = strdup(value);
-      updated = true;
-      break;
+    //free value associated with env var
+    free(g_dsh_environment->variables[i].value);
+    //allocate mem and assign new value as specified by user
+    g_dsh_environment->variables[i].value = strdup(value);
+    updated = true;
+    break;
     }
   }
 
-  // if adding a new key:value pair to environment variable list
+  //if there env var is not present in environment
   if (!updated) {
-    // TGN: djg - unused - comment so build works
-    //   bool empty_slot = false;
-    size_t null_index = 0;
-
+    // size_t null_index = 0; //TODO delete if no issues with running
+    size_t index = 0;
+    
+    //allocate additional mem for newly added env var
     updated = grow();
-    for (null_index = 0; null_index < g_dsh_environment->count; null_index++) {
-      if (g_dsh_environment->variables[null_index].name == NULL) {
-        // TGN: djg - unused - comment so build works
-        //   empty_slot = true;
+    for (index = 0; index < g_dsh_environment->count; index++) {
+      if (g_dsh_environment->variables[index].name == NULL) {
         break;
       }
     }
-    g_dsh_environment->variables[null_index].name = strdup(name);
-    g_dsh_environment->variables[null_index].value = strdup(value);
+    //allocate mem and set name and value of new env var 
+    g_dsh_environment->variables[index].name = strdup(name);
+    g_dsh_environment->variables[index].value = strdup(value);
   }
 
   return updated;
 }
 
+//remove an env variable from env
 bool dsh_unsetenv(command_line_t *command_line) {
-  assert(g_dsh_environment);
-  assert(command_line);
+    assert(g_dsh_environment);
+    assert(command_line);
 
-  bool found = false;
-  char *dsh_var_name = my_strtok(NULL, ' ');
-  // search for var name --> free key:value pair upon discovery
-  for (size_t index = 0; index < g_dsh_environment->count; index++) {
+    bool found = false;
+    char *dsh_var_name = my_strtok(NULL, ' ');
+    // search for var name --> free key:value pair upon discovery
+    for (size_t index = 0; index < g_dsh_environment->count; index++) {
     if (my_strcmp(dsh_var_name, g_dsh_environment->variables[index].name) ==
         0) {
-      free(g_dsh_environment->variables[index].name);
-      g_dsh_environment->variables[index].name = NULL;
-      free(g_dsh_environment->variables[index].value);
-      g_dsh_environment->variables[index].value = NULL;
-      found = true;
-      break;
+        free(g_dsh_environment->variables[index].name);
+        g_dsh_environment->variables[index].name = NULL;
+        free(g_dsh_environment->variables[index].value);
+        g_dsh_environment->variables[index].value = NULL;
+        found = true;
+        break;
+        }
     }
-  }
 
-  if (!found) {
-    my_printf("no %s found\n", dsh_var_name);
-  }
+    if (!found) {
+        my_printf("no %s found\n", dsh_var_name);
+    }
 
-  return found;
+    return found;
 }
 
+//walk memory space of copied env and free each variable key:value pair
 bool g_dsh_free_environment() {
   assert(g_dsh_environment);
 
@@ -241,7 +255,7 @@ bool g_dsh_free_environment() {
   return true;
 }
 
-// free a 'char* envp[]' (for execve())
+//free mem of entire env initally copied from main
 bool dsh_free_envp(char *dsh_envp[]) {
   assert(dsh_envp);
   char **p = dsh_envp;
@@ -276,26 +290,29 @@ char **dsh_allocate_envp() {
     return envp;
 }
 
+//change the value associated with an env variable
 bool update_variable_value(char* name, char* value) {
-  assert(value);
-  bool updated = false;
-  
-  // find OLDPWD variable and replace value
-  for (size_t i = 0; i < g_dsh_environment->count; i++) {
-    if (STRING_EQUAL(name, g_dsh_environment->variables[i].name)) {
-      free(g_dsh_environment->variables[i].value);
-      g_dsh_environment->variables[i].value = strdup(value);
-      updated = true;
-      break;
-    }
-  }
+    assert(value);
+    bool updated = false;
 
-  return updated;
+    //find OLDPWD variable and replace value
+    for (size_t i = 0; i < g_dsh_environment->count; i++) {
+    if (STRING_EQUAL(name, g_dsh_environment->variables[i].name)) {
+        free(g_dsh_environment->variables[i].value);
+        //use strdup to allocate mem for new value and assign to value
+        g_dsh_environment->variables[i].value = strdup(value);
+        updated = true;
+        break;
+        }
+    }
+
+    return updated;
 }
 
+//replace OLDPWD env var and update 
 char* get_oldpwd_value() {
     char* value = NULL;
-    // find variable and replace value
+    //find variable and update with new old pwd value
     for (size_t i = 0; i < g_dsh_environment->count; i++) {
         if (STRING_EQUAL("OLDPWD", g_dsh_environment->variables[i].name)) {
             value = strdup(g_dsh_environment->variables[i].value);

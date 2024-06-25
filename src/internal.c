@@ -4,6 +4,8 @@
 bool dsh_echo(command_line_t* command_line) {
     assert(command_line);
     char* value = NULL;
+    //custom fx to tokenize a string
+    //on multiple calls, string passed (param 1) will be NULL
     char* argument = my_strtok(NULL, '\n');
     
     if (argument[0] == '$') {

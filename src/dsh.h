@@ -29,27 +29,28 @@ static const char dsh_unsetenv_environment[] = "unsetenv";
 #define PROMPT "dsh$>"
 #define MAX_DSH_ARGS 10
 
-// hold command line information
+// hold command line information passed by user
 typedef struct {
   int wordcount; 
   char *command;
   char *args[];
 } command_line_t;
 
+
 typedef struct nodelist {
   char *string;
   struct nodelist *next;
 } nodelist;
 
-// pwd
+//pwd cmd fxs
 void pwd(void);
 
-// cd
+//cd cmd fxs
 bool is_directory(const char *string);
 void cd(const char *string);
 bool dsh_cd(command_line_t *command_line); //, nodelist *head);
 
-// echo
+//echo cmd fxs
 bool dsh_echo(command_line_t *command_line);
 bool dsh_pwd(command_line_t *command_line);
 char *dsh_getenv(const char *name);
@@ -62,16 +63,16 @@ bool g_dsh_free_environment();
 char **dsh_allocate_envp();
 bool dsh_free_envp(char *dsh_envp[]);
 
-// my_printf
+//my_printf fxs
 int my_printf(char *restrict format, ...);
 
-// readline.c
+//readline.c fxs
 char *my_readline(int fd);
 
-// which
+//which fxs
 bool is_executable(char *folder);
 
-// utility
+//utility fxs
 int my_strcmp(const char *s1, const char *s2);
 char *my_strcat(char *s1, const char *s2);
 char *my_strtok(char *path, char seperator);
@@ -82,7 +83,7 @@ char *my_strcpy(char *dest, const char *src);
 size_t my_strlen(const char *str);
 void my_puts(char const *s);
 
-// new
+//custom fxs
 bool dsh_allocate_environment(char *env[]);
 char *my_strdup(const char *s1);
 int wordlen(char const *s, char c);

@@ -139,23 +139,18 @@ bool run_external(command_line_t* command_line) {
     pid_t pid = fork(); 
     if (pid > 0) {
         int status;
-        //set parent process id for easy identification (debugging purposes)?????????
-        //TODO said they both get this, then shouldn't it be outisde of the parent code block
-        //TODO said when they both wake up from fork, both awaitign commands. But based on waitpid(), shouldn't child be returned first and processed?
-        //TODO why does void and null make things tricky?
+        //set parent process id for easy identification (debugging purposes)
         pid_t wpid = 0xDEADBEEF;
         //requesting status of child process on first portion of do-while loop
         //if successful, parent process will continue to check status for child process, waiting for it's completion and termination
 		do {
-            //TODO understand why would return a pid not a value providing status info
             //passing in pid from fork of child, ptr to status of what child returns, untraced flag used by wait
             //waiting until pid, child process, dies
             //inifiinte loop waiting for child shell to die/go away
             //must avoid spurious wake ups so must put in a inifinite while loop
-			wpid = waitpid(pid, &status, WUNTRACED); 
+			wpid = waitpid(pid, &status, WUNTRACED); //blocking call in this respect
             //ensure parent process has been assigned a pid number
             assert((unsigned int)wpid != 0xDEADBEEF);
-        //TODO wouldn't you want an exit that is normal for WIFEXITED
         //ensured exited appropriately
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
         //if status returned due to uncaught signal, will print error msg to stdout
@@ -170,8 +165,7 @@ bool run_external(command_line_t* command_line) {
         bool success = dsh_free_envp(dsh_envp);
         assert(success);
         //check to ensure successful exit of child process
-        //TODO is this correct??????
-        run_result = wpid != -1 && WEXITSTATUS(status) != EXIT_FAILURE;
+        run_result = (wpid != -1) && (WEXITSTATUS(status) != EXIT_FAILURE);
     //child process
     } else if (pid == 0) {
         //execute user input as passed on cl
@@ -211,10 +205,12 @@ void display_prompt(const char* prompt) {
 //program implements typical linux style shell
 //reads commands from user in an infinite loop until command exit is passed
 int main(int argc, char* argv[], char* envp[]) {
-    // assert(argc);
-    // assert(argv); 
+    assert(argc);
+    assert(argv); 
     //TODO asserting for a purpsoe or an unused check, pragma which turns it off, part of the build in makefile
-    
+        //communicate instrution to compiler (NOT CODE) 
+            //#pragma (compiler specific) 
+            
     command_line_t command_line = {0};
     size_t cmd_line_buffer_length = 0; 
     char* command_line_buffer = NULL;
@@ -251,9 +247,9 @@ int main(int argc, char* argv[], char* envp[]) {
         assert(command_line.command);
     
         // if nothing passed by user or return key hit, will return to top of loop and print prompt to stdout
-        if (!command_line.command || is_equal(command_line.command, "\n")) {
-            continue;
-        }
+        // if (!command_line.command || is_equal(command_line.command, "\n")) {
+        //     continue;
+        // }
         assert(command_line.command);
         //cmd to exit program
         if (my_strcmp(dsh_exit_command, command_line.command) == 0) {
